@@ -24,4 +24,5 @@ def main():
         process(arg) # process() is defined elsewhere
 
 if __name__ == "__main__":
+    print ''
     main()
