@@ -2,9 +2,30 @@ __author__ = 'maux'
 
 import argparse
 import sys
+import pandas as pd
+import numpy as np
 
-def
+def bba_ass( a ,b,max, min ):
+    bba={}
+    for j in range(0,len(a)):
+        p= ((max-(b[j]-min))/max )
+        theta=  1-p
+        bba[a[j]]= np.array([ p ,0, theta] )
+    return bba
 
+##
+
+def readFile_totRank(f):
+    d=pd.read_csv(f,sep="\t")
+    n_ranker= len(d.columns)-1
+    n_obj= d.shape[0]
+    list_rank=[]
+    for i in range(1,n_ranker):
+        bba={}
+        bba = bba_ass(d.ix[:,0],d.ix[:,i],n_obj,1)
+        print bba
+        list_rank.append(bba)
+    return (list_rank,n_ranker,n_obj)
 def main():
     # parse command line options
     try:
@@ -26,6 +47,7 @@ def main():
     flag_type= args.flag_type
     niter =args.niter
     # get the data
+    print readFile_totRank(file_name)
     ## into BBA
     ## BRE main loop
 if __name__ == "__main__":
