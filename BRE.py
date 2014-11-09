@@ -4,28 +4,33 @@ import argparse
 import sys
 import pandas as pd
 import numpy as np
-
+import scipy as sc
 def bba_ass( a ,b,max, min ):
     bba={}
+    eps= 0.005
     for j in range(0,len(a)):
-        p= ((max-(b[j]-min))/max )
-        theta=  1-p
+
+        p = abs (( float (max-(b[j]-min))/ float(max) ) - eps)
+        theta=  1-  p
+        #print b[j], a[j], p, theta
         bba[a[j]]= np.array([ p ,0, theta] )
     return bba
 
 ##
 
 def readFile_totRank(f):
-    d=pd.read_csv(f,sep="\t")
+    d=pd.read_csv(f,sep="\t",header=None)
     n_ranker= len(d.columns)-1
     n_obj= d.shape[0]
     list_rank=[]
-    for i in range(1,n_ranker):
+    mat_rank= np.zeros((n_obj,n_ranker))
+    for i in range(0,n_ranker):
         bba={}
-        bba = bba_ass(d.ix[:,0],d.ix[:,i],n_obj,1)
-        print bba
+        bba = bba_ass(d.ix[:,0],d.ix[:,i+1],n_obj,1)
+        mat_rank[:,i]=d.ix[:,i+1].values
+        print i
         list_rank.append(bba)
-    return (list_rank,n_ranker,n_obj)
+    return (mat_rank,list_rank,n_ranker,n_obj)
 def main():
     # parse command line options
     try:
@@ -47,7 +52,13 @@ def main():
     flag_type= args.flag_type
     niter =args.niter
     # get the data
-    print readFile_totRank(file_name)
+    mat = readFile_totRank(file_name)[0]
+    # median or mean
+    Est= sc.rankdata(np.mean(mat,axis=1))
+    print Est
+    print mat.shape
+    print Est.shape
+    #print mat
     ## into BBA
     ## BRE main loop
 if __name__ == "__main__":
