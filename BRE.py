@@ -56,15 +56,41 @@ def main():
     # get the data
     mat = readFile_totRank(file_name)[0]
     # median or mean
-    print flag_est
     if flag_est==1:
         Est= sc.rankdata(np.mean(mat,axis=1))
     else:
         Est= sc.rankdata(np.median(mat,axis=1))
-    print Est
     #print mat
     ## into BBA
     ## BRE main loop
+
+
+
+        # TT <- 1
+        # save the original input ranking
+        # dRank.S <- dRank
+        # obj <-  as.character(U)
+        #while (TT != Nite) {
+        # if (TT >=2){
+        #   print ('compute new Estimator')
+        ## Mean
+        #  Est[,1] <- rank(apply(dRank,1,mean))
+        #}
+        #print(paste("Step: ",TT," of ",(Nite-1),sep=""))
+        #c <- EstInput.combinationFORn.Adaptive(dRank,obj,BBA.exp,nW,Est)
+        #if (TT ==1){
+        ## Salva i pesi per 1T
+        #MatW[k,] <- abs(c$W)
+        #}
+        #print( paste("Ranker replaced: ",c$S,sep=""))
+        #if (c$S!=-1) {
+        #  BBA.exp[[c$S]] <- c$H
+        #  dRank[,c$S] <-c$R
+        #}
+        #TT <- TT+1
+        #}
+
+
 if __name__ == "__main__":
     print '___'
     main()
