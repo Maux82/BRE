@@ -54,7 +54,7 @@ def main():
     niter =args.niter
     flag_est=args.flag_est
     # get the data
-    mat = readFile_totRank(file_name)[0]
+    mat = readFile_totRank(file_name)[0]   
     # median or mean
     if flag_est==1:
         Est= sc.rankdata(np.mean(mat,axis=1))
