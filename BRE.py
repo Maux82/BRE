@@ -4,7 +4,7 @@ import argparse
 import sys
 import pandas as pd
 import numpy as np
-import scipy as sc
+import scipy.stats as sc
 def bba_ass( a ,b,max, min ):
     bba={}
     eps= 0.005
@@ -37,6 +37,7 @@ def main():
         parser = argparse.ArgumentParser(description='BRE')
         parser.add_argument('--input', dest='fileInput', action='store', help='specify ranking input file', required=True)
         parser.add_argument('--typerank', dest='flag_type', action='store', help='Type of ranking Tot.Ranking (1) or Top-k (2) ', required=True)
+        parser.add_argument('--typeest', dest='flag_est', default=1,action='store', help='Type of Estimator Ranking Mean (1) or Ranking Median (2) ', required=True)
         parser.add_argument('--niter', dest='niter',default=1 ,action='store', help='number of Bre iteration > 0. default BRE-1T', required=True)
 
         args = parser.parse_args()
@@ -51,13 +52,16 @@ def main():
     file_name= args.fileInput
     flag_type= args.flag_type
     niter =args.niter
+    flag_est=args.flag_est
     # get the data
     mat = readFile_totRank(file_name)[0]
     # median or mean
-    Est= sc.rankdata(np.mean(mat,axis=1))
+    print flag_est
+    if flag_est==1:
+        Est= sc.rankdata(np.mean(mat,axis=1))
+    else:
+        Est= sc.rankdata(np.median(mat,axis=1))
     print Est
-    print mat.shape
-    print Est.shape
     #print mat
     ## into BBA
     ## BRE main loop
