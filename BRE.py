@@ -54,41 +54,42 @@ def main():
     niter =args.niter
     flag_est=args.flag_est
     # get the data
-    mat = readFile_totRank(file_name)[0]   
-    # median or mean
-    if flag_est==1:
-        Est= sc.rankdata(np.mean(mat,axis=1))
-    else:
-        Est= sc.rankdata(np.median(mat,axis=1))
-    #print mat
+    mat_rank, list_bba, n_ranker, n_item = readFile_totRank(file_name)
+
+    BRE_core(list_bba, mat_rank, n_ranker, n_item)
+    # print mat
     ## into BBA
     ## BRE main loop
 
 
+def compute_basic_estimator(flag_est, mat):
+    if flag_est==1:
+        Est= sc.rankdata(np.mean(mat,axis=1))
+    else:
+        Est= sc.rankdata(np.median(mat,axis=1))
+    return Est
 
-        # TT <- 1
-        # save the original input ranking
-        # dRank.S <- dRank
-        # obj <-  as.character(U)
-        #while (TT != Nite) {
-        # if (TT >=2){
-        #   print ('compute new Estimator')
-        ## Mean
-        #  Est[,1] <- rank(apply(dRank,1,mean))
-        #}
-        #print(paste("Step: ",TT," of ",(Nite-1),sep=""))
-        #c <- EstInput.combinationFORn.Adaptive(dRank,obj,BBA.exp,nW,Est)
-        #if (TT ==1){
-        ## Salva i pesi per 1T
-        #MatW[k,] <- abs(c$W)
-        #}
-        #print( paste("Ranker replaced: ",c$S,sep=""))
-        #if (c$S!=-1) {
-        #  BBA.exp[[c$S]] <- c$H
-        #  dRank[,c$S] <-c$R
-        #}
-        #TT <- TT+1
-        #}
+
+def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
+    # # compute estimator for BRE-1T
+    # median or mean
+    Est = compute_basic_estimator(flag_est, mat_rank)
+    c_iter = 1
+    while (c_iter != niter ):
+        if c_iter > 2:
+            Est = compute_basic_estimator(flag_est, mat_rank)
+        = BBA_comb(mat_rank, bba, xx, Est)
+        if c_iter == 1:
+            print 'SAve Weight'
+            #Mat_W[k,] <- abs(Weight)
+        # replace rank
+        if rep != -1:
+            bba[rep] = out_bba
+            mat_rank[:, rep] = out_rank
+        c_iter += 1
+
+
+def BBA_comb(m_rank, bba_l, list_obj, Est) :
 
 
 if __name__ == "__main__":
