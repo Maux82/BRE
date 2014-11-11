@@ -17,6 +17,40 @@ def bba_ass( a ,b,max, min ):
     return bba
 
 ##
+def BBA_comb(m_rank, bba_l, list_obj, Est):
+    Weight < - Adaptive.weight(m_rank, Est, len(list_obj), len(bba_l))
+    # # apply weight
+    # #combination
+    ## ready to output
+    return 1
+
+
+def compute_basic_estimator(flag_est, mat):
+    if flag_est == 1:
+        Est = sc.rankdata(np.mean(mat, axis=1))
+    else:
+        Est = sc.rankdata(np.median(mat, axis=1))
+    return Est
+
+
+def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
+    # # compute estimator for BRE-1T
+    # median or mean
+    Est = compute_basic_estimator(flag_est, mat_rank)
+    c_iter = 1
+    while (c_iter != niter ):
+        if c_iter > 2:
+            Est = compute_basic_estimator(flag_est, mat_rank)
+        vv = BBA_comb(mat_rank, bba, xx, Est)
+        if c_iter == 1:
+            print 'SAve Weight'
+            # Mat_W[k,] <- abs(Weight)
+        # replace rank
+        if rep != -1:
+            bba[rep] = out_bba
+            mat_rank[:, rep] = out_rank
+        c_iter += 1
+
 
 def readFile_totRank(f):
     d=pd.read_csv(f,sep="\t",header=None)
@@ -31,6 +65,8 @@ def readFile_totRank(f):
         print i
         list_rank.append(bba)
     return (mat_rank,list_rank,n_ranker,n_obj)
+
+
 def main():
     # parse command line options
     try:
@@ -54,48 +90,11 @@ def main():
     niter =args.niter
     flag_est=args.flag_est
     # get the data
-    mat_rank, list_bba, n_ranker, n_item = readFile_totRank(file_name)
-
-    BRE_core(list_bba, mat_rank, n_ranker, n_item)
     # print mat
     ## into BBA
-    ## BRE main loop
-
-
-def compute_basic_estimator(flag_est, mat):
-    if flag_est==1:
-        Est= sc.rankdata(np.mean(mat,axis=1))
-    else:
-        Est= sc.rankdata(np.median(mat,axis=1))
-    return Est
-
-
-def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
-    # # compute estimator for BRE-1T
-    # median or mean
-    Est = compute_basic_estimator(flag_est, mat_rank)
-    c_iter = 1
-    while (c_iter != niter ):
-        if c_iter > 2:
-            Est = compute_basic_estimator(flag_est, mat_rank)
-        vv = BBA_comb(mat_rank, bba, xx, Est)
-        if c_iter == 1:
-            print 'SAve Weight'
-            #Mat_W[k,] <- abs(Weight)
-        # replace rank
-        if rep != -1:
-            bba[rep] = out_bba
-            mat_rank[:, rep] = out_rank
-        c_iter += 1
-
-
-def BBA_comb(m_rank, bba_l, list_obj, Est) :
-    Weight < - Adaptive.weight(m_rank, Est, len(list_obj), len(bba_l))
-    # # apply weight
-    ##combination
-    ## ready to output
-    return 1
-
+    mat_rank, list_bba, n_ranker, n_item = readFile_totRank(file_name)
+    # # BRE main
+    BRE_core(list_bba, mat_rank, n_ranker, n_item)
 
 if __name__ == "__main__":
     print '___'
