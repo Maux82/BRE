@@ -5,21 +5,34 @@ import sys
 import pandas as pd
 import numpy as np
 import scipy.stats as sc
+
+
 def bba_ass( a ,b,max, min ):
     bba={}
     eps= 0.005
     for j in range(0,len(a)):
-
         p = abs (( float (max-(b[j]-min))/ float(max) ) - eps)
         theta=  1-  p
         #print b[j], a[j], p, theta
         bba[a[j]]= np.array([ p ,0, theta] )
     return bba
 
-##
-def BBA_comb(m_rank, bba_l, list_obj, Est):
-    Weight < - Adaptive.weight(m_rank, Est, len(list_obj), len(bba_l))
+
+# # weight computation
+
+def Dnorm(a, b):
+    return (np.sum(abs(a - b)) / (0.5 * (len(a) ** 2)))
+
+
+# #  BBA_combination
+def BBA_comb(m_rank, bba_l, Est):
+    weight = np.zeros(len(bba_l))
+    for i in range(0, len(weight)):
+        weight[i] = Dnorm(m_rank[:, i], Est)
+
     # # apply weight
+    for i in range(0, n_ranker):
+        O
     # #combination
     ## ready to output
     return 1
@@ -41,14 +54,16 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
     while (c_iter != niter ):
         if c_iter > 2:
             Est = compute_basic_estimator(flag_est, mat_rank)
-        vv = BBA_comb(mat_rank, bba, xx, Est)
+
+        rep = BBA_comb(mat_rank, bba, Est)
         if c_iter == 1:
             print 'SAve Weight'
             # Mat_W[k,] <- abs(Weight)
         # replace rank
         if rep != -1:
-            bba[rep] = out_bba
-            mat_rank[:, rep] = out_rank
+            print 'Substitution'
+            # bba[rep] = out_bba
+            #mat_rank[:, rep] = out_rank
         c_iter += 1
 
 
@@ -94,7 +109,8 @@ def main():
     ## into BBA
     mat_rank, list_bba, n_ranker, n_item = readFile_totRank(file_name)
     # # BRE main
-    BRE_core(list_bba, mat_rank, n_ranker, n_item)
+
+    BRE_core(list_bba, mat_rank, n_ranker, n_item, niter, flag_est)
 
 if __name__ == "__main__":
     print '___'
