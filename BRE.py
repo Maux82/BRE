@@ -78,7 +78,7 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
     while (c_iter != niter ):
         if c_iter > 2:
             Est = compute_basic_estimator(flag_est, mat_rank)
-        = BBA_comb(mat_rank, bba, xx, Est)
+        vv = BBA_comb(mat_rank, bba, xx, Est)
         if c_iter == 1:
             print 'SAve Weight'
             #Mat_W[k,] <- abs(Weight)
@@ -90,6 +90,11 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
 
 
 def BBA_comb(m_rank, bba_l, list_obj, Est) :
+    Weight < - Adaptive.weight(m_rank, Est, len(list_obj), len(bba_l))
+    # # apply weight
+    ##combination
+    ## ready to output
+    return 1
 
 
 if __name__ == "__main__":
