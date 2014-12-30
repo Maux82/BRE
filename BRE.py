@@ -31,12 +31,44 @@ def BBA_comb(m_rank, bba_l, Est):
         weight[i] = Dnorm(m_rank[:, i], Est)
 
     # # apply weight
-    for i in range(0, n_ranker):
-        O
+    comb_bba = {}
+    for a in bba_l[1].keys():
+        comb_bba[a] = np.array([0, 0, 1])
+    for i in range(0, len(bba_l)):
+        curr_bba_r = bba_l[i]
+        curr_bba_r = discount(curr_bba_r, weight, i)
+        combination(comb_bba, curr_bba_r)
     # #combination
     ## ready to output
     return 1
 
+
+def combination(comb, curr):
+    for a in comb.keys():
+        comb[a][0] = comb[a][0] * curr[a][0] + comb[a][0] * curr[a][2] + comb[a][2] * curr[a][0]
+        comb[a][1] = comb[a][1] * curr[a][1] + comb[a][1] * curr[a][2] + comb[a][2] * curr[a][1]
+        comb[a][2] = comb[a][2] * curr[a][2]
+        # konf <-  x[1]*y[2]+x[2] *y[1]
+        #betP <- sum(A/(1-konf),(nP/(1-konf))*0.5)
+        #betnP <- sum(B/(1-konf),(nP/(1-konf))*0.5)
+    return comb
+
+
+def discount(bba_r, weight, num_exp):
+    if min(weight) == weight[num_exp]:
+        # # increase belief
+        for a in bba_r.keys():
+            b = bba_r[a]
+            bba_r[a][0] = b[0] + (weight[num_exp] * b[2])
+            bba_r[a][2] = 1 - bba_r[a][0]
+    else:
+        # # discoount
+        for a in bba_r.keys():
+            b = bba_r[a]
+            bba_r[a][0] = b[2] + (weight[num_exp] * b[0])
+            bba_r[a][2] = 1 - bba_r[a][0]
+            #bba_r[a]= b
+    return bba_r
 
 def compute_basic_estimator(flag_est, mat):
     if flag_est == 1:
