@@ -44,6 +44,7 @@ def BBA_comb(m_rank, bba_l, Est):
 
 
 def combination(comb, curr):
+    # combina a due a due
     for a in comb.keys():
         comb[a][0] = comb[a][0] * curr[a][0] + comb[a][0] * curr[a][2] + comb[a][2] * curr[a][0]
         comb[a][1] = comb[a][1] * curr[a][1] + comb[a][1] * curr[a][2] + comb[a][2] * curr[a][1]
@@ -83,7 +84,9 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
     # median or mean
     Est = compute_basic_estimator(flag_est, mat_rank)
     c_iter = 1
-    while (c_iter != niter ):
+    print '#iter ', niter
+    while (c_iter <= niter):
+
         if c_iter > 2:
             Est = compute_basic_estimator(flag_est, mat_rank)
 
@@ -95,9 +98,9 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
         if rep != -1:
             print 'Substitution'
             # bba[rep] = out_bba
-            #mat_rank[:, rep] = out_rank
+            mat_rank[:, rep] = out_rank
         c_iter += 1
-
+    return -1
 
 def readFile_totRank(f):
     d=pd.read_csv(f,sep="\t",header=None)
@@ -134,8 +137,8 @@ def main():
 
     file_name= args.fileInput
     flag_type= args.flag_type
-    niter =args.niter
-    flag_est=args.flag_est
+    niter = int(args.niter)
+    flag_est = int(args.flag_est)
     # get the data
     # print mat
     ## into BBA
