@@ -5,6 +5,8 @@ import sys
 import pandas as pd
 import numpy as np
 import scipy.stats as sc
+from pyds import MassFunction
+from itertools import product
 
 
 def bba_ass( a ,b,max, min ):
@@ -13,8 +15,10 @@ def bba_ass( a ,b,max, min ):
     for j in range(0,len(a)):
         p = abs (( float (max-(b[j]-min))/ float(max) ) - eps)
         theta=  1-  p
-        #print b[j], a[j], p, theta
-        bba[a[j]]= np.array([ p ,0, theta] )
+        m1 = MassFunction()
+        m1['a'] = p
+        m1['ab'] = theta
+        bba[a[j]] = m1
     return bba
 
 
@@ -29,26 +33,33 @@ def BBA_comb(m_rank, bba_l, Est):
     weight = np.zeros(len(bba_l))
     for i in range(0, len(weight)):
         weight[i] = Dnorm(m_rank[:, i], Est)
-
     # # apply weight
     comb_bba = {}
     for a in bba_l[1].keys():
-        comb_bba[a] = np.array([0, 0, 1])
+        pass_exp = MassFunction()
+        pass_exp['a'] = 0
+        pass_exp['ab'] = 1
+        comb_bba[a] = pass_exp
     for i in range(0, len(bba_l)):
         curr_bba_r = bba_l[i]
+        # print curr_bba_r
         curr_bba_r = discount(curr_bba_r, weight, i)
+
+        #print curr_bba_r
         combination(comb_bba, curr_bba_r)
+
+
     # #combination
     ## ready to output
-    return 1
+    return comb_bba
 
 
 def combination(comb, curr):
     # combina a due a due
     for a in comb.keys():
-        comb[a][0] = comb[a][0] * curr[a][0] + comb[a][0] * curr[a][2] + comb[a][2] * curr[a][0]
-        comb[a][1] = comb[a][1] * curr[a][1] + comb[a][1] * curr[a][2] + comb[a][2] * curr[a][1]
-        comb[a][2] = comb[a][2] * curr[a][2]
+        comb[a] = comb[a].combine_conjunctive(curr[a])
+        # comb[a][1] = comb[a][1] * curr[a][1] + comb[a][1] * curr[a][2] + comb[a][2] * curr[a][1]
+        #comb[a][2] = comb[a][2] * curr[a][2]
         # konf <-  x[1]*y[2]+x[2] *y[1]
         #betP <- sum(A/(1-konf),(nP/(1-konf))*0.5)
         #betnP <- sum(B/(1-konf),(nP/(1-konf))*0.5)
@@ -60,14 +71,14 @@ def discount(bba_r, weight, num_exp):
         # # increase belief
         for a in bba_r.keys():
             b = bba_r[a]
-            bba_r[a][0] = b[0] + (weight[num_exp] * b[2])
-            bba_r[a][2] = 1 - bba_r[a][0]
+            bba_r[a]['a'] = b['a'] + (weight[num_exp] * b['ab'])
+            bba_r[a]['ab'] = 1 - bba_r[a]['a']
     else:
         # # discoount
         for a in bba_r.keys():
             b = bba_r[a]
-            bba_r[a][0] = b[2] + (weight[num_exp] * b[0])
-            bba_r[a][2] = 1 - bba_r[a][0]
+            bba_r[a]['a'] = b['ab'] + (weight[num_exp] * b['a'])
+            bba_r[a]['ab'] = 1 - bba_r[a]['a']
             #bba_r[a]= b
     return bba_r
 
@@ -91,14 +102,19 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
             Est = compute_basic_estimator(flag_est, mat_rank)
 
         rep = BBA_comb(mat_rank, bba, Est)
+        print rep
+        exit()
         if c_iter == 1:
             print 'SAve Weight'
+
+
             # Mat_W[k,] <- abs(Weight)
         # replace rank
         if rep != -1:
             print 'Substitution'
             # bba[rep] = out_bba
-            mat_rank[:, rep] = out_rank
+            #
+            # mat_rank[:, rep] = rep
         c_iter += 1
     return -1
 
