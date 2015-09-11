@@ -9,6 +9,9 @@ from pyds import MassFunction
 from itertools import product
 
 
+def print_ranking(r):
+
+
 def bba_ass( a ,b,max, min ):
     bba={}
     eps= 0.005
@@ -44,14 +47,17 @@ def BBA_comb(m_rank, bba_l, Est):
         curr_bba_r = bba_l[i]
         # print curr_bba_r
         curr_bba_r = discount(curr_bba_r, weight, i)
-
         #print curr_bba_r
+        ## combine the BBBS item by items
         combination(comb_bba, curr_bba_r)
-
-
+    pA = []
+    for a in bba_l[1].keys():
+        pA.append(comb_bba[a].pignistic()['a'])
+    output_rank = sc.rankdata(- np.array(pA))
     # #combination
-    ## ready to output
-    return comb_bba
+    ## weight
+    ## rank output
+    return comb_bba, weight, output_rank
 
 
 def combination(comb, curr):
@@ -95,28 +101,22 @@ def BRE_core(bba, mat_rank, n_rank, n_item, niter, flag_est):
     # median or mean
     Est = compute_basic_estimator(flag_est, mat_rank)
     c_iter = 1
-    print '#iter ', niter
     while (c_iter <= niter):
-
         if c_iter > 2:
             Est = compute_basic_estimator(flag_est, mat_rank)
 
-        rep = BBA_comb(mat_rank, bba, Est)
-        print rep
-        exit()
-        if c_iter == 1:
-            print 'SAve Weight'
-
-
-            # Mat_W[k,] <- abs(Weight)
-        # replace rank
-        if rep != -1:
-            print 'Substitution'
+        out_bba, w, o_rank = BBA_comb(mat_rank, bba, Est)
+        print '#iter ', niter, 'weight', w
+        if c_iter >= 2:
+            index_min = np.where(w == min(w))
+            print 'Aggr_Ranked substituded in:', index_min
+            bba[index_min] = out_bba
+            mat_rank[:, index_min] = o_rank
             # bba[rep] = out_bba
             #
-            # mat_rank[:, rep] = rep
+
         c_iter += 1
-    return -1
+    return o_rank
 
 def readFile_totRank(f):
     d=pd.read_csv(f,sep="\t",header=None)
@@ -161,7 +161,9 @@ def main():
     mat_rank, list_bba, n_ranker, n_item = readFile_totRank(file_name)
     # # BRE main
 
-    BRE_core(list_bba, mat_rank, n_ranker, n_item, niter, flag_est)
+    output_rank = BRE_core(list_bba, mat_rank, n_ranker, n_item, niter, flag_est)
+
+    print_ranking(output_rank)
 
 if __name__ == "__main__":
     print '___'
